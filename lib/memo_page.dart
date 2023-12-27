@@ -77,14 +77,19 @@ class _MemoPageState extends State<MemoPage> {
     );
   }
 
-  void _onTapCardItem(int index) {
+  Future<void> _onTapCardItem(int index) async {
     final dispIndex = index + 1;
+    final SharedPreferences prefs = await _prefs;
+
     _showAlertDialog(
         title: "削除しますか？",
         message: "$dispIndex番目のアイテムを削除します",
-        onPositiveButton: () {
+        onPositiveButton: () async {
+          _memoList.removeAt(index);
+          await prefs.setStringList('MemoList', _memoList);
+          final updatedList = prefs.getStringList('MemoList') ?? [];
           setState(() {
-            _memoList.removeAt(index);
+            _memoList = updatedList;
           });
         },
         onNegativeButton: () {
@@ -110,9 +115,14 @@ class _MemoPageState extends State<MemoPage> {
     });
   }
 
-  void _onPressedDeleteItemsButton() {
+  Future<void> _onPressedDeleteItemsButton() async {
+    final SharedPreferences prefs = await _prefs;
+
+    _memoList = [];
+    await prefs.setStringList('MemoList', _memoList);
+    final updatedList = prefs.getStringList('MemoList') ?? [];
     setState(() {
-      _memoList = [];
+      _memoList = updatedList;
     });
   }
 
