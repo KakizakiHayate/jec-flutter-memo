@@ -118,12 +118,21 @@ class _MemoPageState extends State<MemoPage> {
   Future<void> _onPressedDeleteItemsButton() async {
     final SharedPreferences prefs = await _prefs;
 
-    _memoList = [];
-    await prefs.setStringList('MemoList', _memoList);
-    final updatedList = prefs.getStringList('MemoList') ?? [];
-    setState(() {
-      _memoList = updatedList;
-    });
+    _showAlertDialog(
+        title: "削除しますか？",
+        message: "全部のアイテムを削除します",
+        onPositiveButton: () async {
+          _memoList = [];
+          await prefs.setStringList('MemoList', _memoList);
+          final updatedList = prefs.getStringList('MemoList') ?? [];
+          setState(() {
+            _memoList = updatedList;
+          });
+        },
+        onNegativeButton: () {
+          _showSnackBar(message: "処理をキャンセルしました");
+        }
+    );
   }
 
   void _showSnackBar({required String message}) {
